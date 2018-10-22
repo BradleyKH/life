@@ -1,6 +1,13 @@
 <html><head><title>Life Model</title>
 
 <style type="text/css">
+BODY {
+  background-color: #000000;
+	color: #FFFFFF;
+	font-family: Courier New, Courier;
+	font-size: 14px;
+}
+
 #model {
   text-align: center;
   display: block;
@@ -10,17 +17,27 @@
 <script language="javascript">
 
 var genNum = 0;
+var running = true;
 var dots = ['.'];
 
+	
 function randomNum() {
   var r = Math.random();
   return r;
 }
 
-function nextGen() {
-  var newDots = [''];
+function toggleRunning() {
+  running = !running;
+	const p = document.getElementById('pauseButton');
+	if (p.innerHTML == 'Pause')
+	  p.innerHTML = 'Resume';
+  else
+	  p.innerHTML = 'Pause';
+}
 
-  if (genNum < 999) {
+function nextGen() {
+	var newDots = [''];
+  if (genNum < 999 && running) {
     dots[dots.length] = '';
     for (var i = 0; i < dots.length; i++) {
       newDots[i + 1] = '';
@@ -82,7 +99,6 @@ function nextGen() {
 
 function lifeModel() {
   document.getElementById('gen').innerHTML = genNum;
-
   document.getElementById('model').innerHTML = dots;
   setInterval(nextGen, 500);
 }
@@ -90,6 +106,8 @@ function lifeModel() {
 function reset() {
   genNum = 0;
   dots = ['.'];
+	document.getElementById('gen').innerHTML = genNum;
+	document.getElementById('model').innerHTML = dots;
 }
 
 </script>
@@ -97,8 +115,9 @@ function reset() {
 </head>
 
 <body onload="lifeModel();">
+<h1>Life</h1>
 <p>
- <button onclick="nextGen();">Next</button>
+ <button onclick="toggleRunning();" id="pauseButton">Pause</button>
  <button onclick="reset();">Reset</button>
 </p>
 <p>Generation: <span id="gen"></span></p>
