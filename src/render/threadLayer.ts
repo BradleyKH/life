@@ -46,7 +46,7 @@ void main() {
  */
 export class ThreadLayer {
   readonly lines: LineSegments;
-  showLineage = true;
+  showLineage = false;
   private readonly geometry = new BufferGeometry();
   private readonly position = new Float32Array(MAX_THREADS * 6);
   private readonly color = new Float32Array(MAX_THREADS * 6);

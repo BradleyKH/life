@@ -24,7 +24,7 @@ const CLICK_SLOP_PX = 5;
 
 export class App {
   private readonly viewport: Viewport;
-  private readonly sim = new Simulation({ capacity: 1800, mutationRate: 1 });
+  private readonly sim = new Simulation({ capacity: 5000, mutationRate: 4 });
   private readonly motion = new Motion();
   private readonly organisms = new OrganismLayer();
   private readonly threads = new ThreadLayer();
