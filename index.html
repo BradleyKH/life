@@ -18,18 +18,10 @@
   <body>
     <canvas id="scene" aria-label="Animated three-dimensional view of the living population"></canvas>
 
-    <div id="hud">
+    <div id="hud" class="hidden">
       <header class="panel brand">
         <h1>Life</h1>
         <p class="tagline">a bioluminescent life model</p>
-        <ol class="glyph-path" aria-label="Life stages">
-          <li style="--c: #9be7ff">.</li>
-          <li style="--c: #3ff0d0">o</li>
-          <li style="--c: #48b5ff">O</li>
-          <li style="--c: #ff5fd2">@</li>
-          <li style="--c: #a68bff">0</li>
-          <li style="--c: #4f6680">-</li>
-        </ol>
         <dl class="stats">
           <div><dt>Epoch</dt><dd id="stat-epoch">1</dd></div>
           <div><dt>Generation</dt><dd id="stat-gen">0</dd></div>
@@ -95,8 +87,6 @@
     </div>
 
     <button id="btn-show" class="chip floating" title="Show interface (H)">Show UI</button>
-    <div id="reticle" aria-hidden="true"></div>
-    <div id="tooltip" role="tooltip"></div>
 
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -117,28 +117,6 @@ body {
   color: var(--ink-dim);
 }
 
-.glyph-path {
-  display: flex;
-  gap: 4px;
-  margin: 0 0 16px;
-  padding: 0;
-  list-style: none;
-  font-family: var(--mono);
-  font-size: 15px;
-}
-
-.glyph-path li {
-  color: var(--c);
-  text-shadow: 0 0 10px var(--c);
-}
-
-.glyph-path li:not(:last-child)::after {
-  content: '\203A';
-  margin-left: 4px;
-  color: var(--ink-faint);
-  text-shadow: none;
-}
-
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -238,13 +216,14 @@ body {
   align-items: center;
 }
 
-.legend .glyph {
+.legend .dot {
   grid-row: span 2;
-  font-family: var(--mono);
-  font-size: 18px;
-  text-align: center;
-  color: var(--c);
-  text-shadow: 0 0 10px var(--c);
+  justify-self: center;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 10px var(--c);
 }
 
 .legend .name {
@@ -514,12 +493,14 @@ input[type='range']::-moz-range-thumb {
 }
 
 #hud.hidden ~ .floating {
-  opacity: 0.6;
   pointer-events: auto;
+  transition: opacity 2.5s ease-in;
 }
 
+#hud.hidden ~ .floating.awake,
 #hud.hidden ~ .floating:hover {
   opacity: 1;
+  transition: opacity 0.2s;
 }
 
 /* Event log */
@@ -590,103 +571,6 @@ input[type='range']::-moz-range-thumb {
   opacity: 0;
 }
 
-/* Inspector */
-
-#reticle {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 34px;
-  height: 34px;
-  margin: -17px 0 0 -17px;
-  border-radius: 50%;
-  border: 1px solid rgba(220, 255, 255, 0.75);
-  box-shadow:
-    0 0 14px rgba(120, 240, 255, 0.5),
-    inset 0 0 10px rgba(120, 240, 255, 0.3);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-#reticle.on {
-  opacity: 1;
-  animation: reticle 1.8s ease-in-out infinite;
-}
-
-@keyframes reticle {
-  50% {
-    box-shadow:
-      0 0 22px rgba(120, 240, 255, 0.8),
-      inset 0 0 14px rgba(120, 240, 255, 0.5);
-  }
-}
-
-#tooltip {
-  position: fixed;
-  left: 0;
-  top: 0;
-  min-width: 170px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--edge-bright);
-  background: var(--glass-strong);
-  backdrop-filter: blur(12px);
-  font-size: 12px;
-  color: var(--ink-dim);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-#tooltip.on {
-  opacity: 1;
-}
-
-#tooltip h3 {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin: 0 0 6px;
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--ink);
-}
-
-#tooltip h3 .g {
-  font-family: var(--mono);
-  color: var(--c);
-  text-shadow: 0 0 10px var(--c);
-}
-
-#tooltip dl {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 2px 12px;
-  margin: 0;
-}
-
-#tooltip dt {
-  color: var(--ink-faint);
-}
-
-#tooltip dd {
-  margin: 0;
-  font-family: var(--mono);
-  color: var(--ink);
-  text-align: right;
-}
-
-#tooltip .swatch {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  margin-right: 6px;
-  border-radius: 50%;
-  background: var(--h);
-  box-shadow: 0 0 8px var(--h);
-}
-
 /* Narrow screens: keep the essentials, let the organisms have the room. */
 
 @media (max-width: 1180px), (max-height: 700px) {
@@ -719,11 +603,6 @@ input[type='range']::-moz-range-thumb {
   .tagline,
   .strategy {
     display: none;
-  }
-
-  .glyph-path {
-    margin-top: 10px;
-    margin-bottom: 10px;
   }
 
   .stats {

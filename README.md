@@ -36,9 +36,8 @@ On top of that:
 
 | Input | Action |
 | ----- | ------ |
-| Click empty space | Seed a new founder spore (new lineage) |
+| Click | Seed a new founder spore (new lineage) |
 | Drag / scroll | Orbit / zoom |
-| Hover | Inspect an organism |
 | `Space` | Pause / resume |
 | `S` | Step one generation |
 | `R` | Reset |

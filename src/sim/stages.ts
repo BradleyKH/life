@@ -12,8 +12,6 @@ export type Stage = (typeof Stage)[keyof typeof Stage];
 export const STAGE_COUNT = 6;
 
 export interface StageInfo {
-  /** The glyph each stage had in the original text version. */
-  glyph: string;
   name: string;
   /** Base chance of dying at the end of a generation spent in this stage. */
   deathChance: number;
@@ -22,12 +20,12 @@ export interface StageInfo {
 }
 
 export const STAGES: readonly StageInfo[] = [
-  { glyph: '.', name: 'Spore', deathChance: 0.05, css: '#9be7ff' },
-  { glyph: 'o', name: 'Larva', deathChance: 0.05, css: '#3ff0d0' },
-  { glyph: 'O', name: 'Adult', deathChance: 0.05, css: '#48b5ff' },
-  { glyph: '@', name: 'Bloom', deathChance: 0.1, css: '#ff5fd2' },
-  { glyph: '0', name: 'Elder', deathChance: 0.2, css: '#a68bff' },
-  { glyph: '-', name: 'Husk', deathChance: 1, css: '#4f6680' },
+  { name: 'Spore', deathChance: 0.05, css: '#9be7ff' },
+  { name: 'Larva', deathChance: 0.05, css: '#3ff0d0' },
+  { name: 'Adult', deathChance: 0.05, css: '#48b5ff' },
+  { name: 'Bloom', deathChance: 0.1, css: '#ff5fd2' },
+  { name: 'Elder', deathChance: 0.2, css: '#a68bff' },
+  { name: 'Husk', deathChance: 1, css: '#4f6680' },
 ];
 
 /**

@@ -12,6 +12,9 @@ export interface ControlHandlers {
   isOrbiting(): boolean;
 }
 
+/** Idle time before the Show UI button starts fading out. */
+const SHOW_BUTTON_IDLE_MS = 1500;
+
 /** Slider position 0..100 maps exponentially onto 0.25..12 generations per second. */
 function speedFromSlider(v: number): number {
   return 0.25 * Math.pow(48, v / 100);
@@ -47,7 +50,17 @@ export function bindControls(h: ControlHandlers): void {
   lineage.addEventListener('click', doLineage);
   orbit.addEventListener('click', doOrbit);
   hideHud.addEventListener('click', doHud);
-  $('btn-show').addEventListener('click', doHud);
+  const show = $('btn-show');
+  show.addEventListener('click', doHud);
+  let idle = 0;
+  const wake = () => {
+    show.classList.add('awake');
+    window.clearTimeout(idle);
+    idle = window.setTimeout(() => show.classList.remove('awake'), SHOW_BUTTON_IDLE_MS);
+  };
+  window.addEventListener('pointermove', wake);
+  window.addEventListener('pointerdown', wake);
+  window.addEventListener('keydown', wake);
   orbit.classList.toggle('on', h.isOrbiting());
 
   const slider = (id: string, out: string, map: (v: number) => number, show: (v: number) => string, apply: (v: number) => void) => {

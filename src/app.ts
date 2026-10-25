@@ -1,7 +1,6 @@
 import { Plane, Raycaster, Timer, Vector2, Vector3 } from 'three';
 import { Backdrop } from './render/backdrop';
 import { OrganismLayer } from './render/organismLayer';
-import { ShockwaveLayer } from './render/shockwaveLayer';
 import { SnowLayer } from './render/snowLayer';
 import { SparkLayer } from './render/sparkLayer';
 import { ThreadLayer } from './render/threadLayer';
@@ -14,7 +13,6 @@ import { bindControls } from './ui/controls';
 import { $ } from './ui/dom';
 import { EventLog } from './ui/eventLog';
 import { Hud } from './ui/hud';
-import { Inspector } from './ui/inspector';
 import { Narrator } from './ui/narrator';
 import { PopulationChart } from './ui/populationChart';
 import { Spectrum } from './ui/spectrum';
@@ -31,14 +29,12 @@ export class App {
   private readonly organisms = new OrganismLayer();
   private readonly threads = new ThreadLayer();
   private readonly sparks = new SparkLayer();
-  private readonly shockwaves = new ShockwaveLayer();
   private readonly snow = new SnowLayer();
   private readonly backdrop = new Backdrop();
   private readonly hud = new Hud();
   private readonly chart = new PopulationChart();
   private readonly spectrum = new Spectrum();
   private readonly narrator = new Narrator(new EventLog());
-  private readonly inspector: Inspector;
   private readonly timer = new Timer();
   private readonly centroid = new Vector3();
 
@@ -47,7 +43,6 @@ export class App {
   private tickDebt = 0;
   private time = 0;
   private hudTimer = 0;
-  private dragging = false;
   /** Seconds into the opening dolly-out; null once finished or interrupted. */
   private opening: number | null = 0;
 
@@ -55,14 +50,13 @@ export class App {
     this.viewport = new Viewport(canvas);
     const { scene } = this.viewport;
     scene.add(this.backdrop.mesh, this.snow.points, this.threads.lines, this.organisms.points);
-    scene.add(this.sparks.points, this.shockwaves.group);
+    scene.add(this.sparks.points);
     this.viewport.onResize((h) => {
       this.organisms.setViewportHeight(h);
       this.sparks.setViewportHeight(h);
       this.snow.setViewportHeight(h);
     });
 
-    this.inspector = new Inspector(canvas);
     this.bindPointer();
     bindControls({
       togglePause: () => (this.running = !this.running) === false,
@@ -105,7 +99,6 @@ export class App {
     this.organisms.update(this.sim.organisms, dt, this.time, 1 / this.gensPerSecond, this.running);
     this.threads.update(this.sim.organisms, (id) => this.organisms.visualOf(id)?.born ?? Infinity);
     this.sparks.update(dt);
-    this.shockwaves.update(dt);
     this.snow.update(this.time);
     this.backdrop.update(this.time, this.sim.tideLevel());
     this.backdrop.mesh.position.copy(this.viewport.camera.position);
@@ -113,7 +106,6 @@ export class App {
     this.followColony(dt);
     this.updateOpening(dt);
     this.viewport.controls.update(dt);
-    this.inspector.update(this.sim.organisms, this.viewport.camera, this.dragging);
 
     this.hudTimer -= dt;
     if (this.hudTimer <= 0) {
@@ -126,7 +118,7 @@ export class App {
 
   private advance(): void {
     const result = this.sim.tick();
-    playTickEffects(result, this.organisms, this.sparks, this.shockwaves, 1 / this.gensPerSecond);
+    playTickEffects(result, this.organisms, this.sparks, 1 / this.gensPerSecond);
     this.narrator.observe(this.sim, result);
     if (result.newEpoch) this.organisms.clear();
     this.chart.draw(this.sim.history, this.sim.generation);
@@ -137,7 +129,6 @@ export class App {
     this.sim.reset();
     this.organisms.clear();
     this.sparks.clear();
-    this.shockwaves.clear();
     this.narrator.reset();
     this.tickDebt = 0;
     this.chart.draw(this.sim.history, this.sim.generation);
@@ -183,12 +174,10 @@ export class App {
   private bindPointer(): void {
     const controls = this.viewport.controls;
     controls.addEventListener('start', () => {
-      this.dragging = true;
       this.opening = null;
       this.canvas.classList.add('grabbing');
     });
     controls.addEventListener('end', () => {
-      this.dragging = false;
       this.canvas.classList.remove('grabbing');
     });
 
@@ -197,7 +186,6 @@ export class App {
     this.canvas.addEventListener('pointerup', (e) => {
       if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > CLICK_SLOP_PX) return;
       down = null;
-      if (this.inspector.hovered) return;
       this.seedAt(e.clientX, e.clientY);
     });
   }

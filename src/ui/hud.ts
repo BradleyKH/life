@@ -19,7 +19,7 @@ export class Hud {
     for (const stage of STAGES) {
       const li = document.createElement('li');
       li.style.setProperty('--c', stage.css);
-      li.innerHTML = `<span class="glyph">${stage.glyph}</span><span class="name">${stage.name}</span><span class="count">0</span><span class="bar"><i></i></span>`;
+      li.innerHTML = `<span class="dot"></span><span class="name">${stage.name}</span><span class="count">0</span><span class="bar"><i></i></span>`;
       legend.append(li);
       this.counts.push(li.querySelector('.count')!);
       this.bars.push(li.querySelector('.bar i')!);

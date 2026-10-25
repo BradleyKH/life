@@ -2,12 +2,10 @@ import { Color } from 'three';
 import type { TickResult } from '../sim/simulation';
 import type { OrganismLayer } from './organismLayer';
 import { hueColor, organismColor } from './palette';
-import type { ShockwaveLayer } from './shockwaveLayer';
 import type { SparkLayer } from './sparkLayer';
 import { staggerOf } from './stagger';
 
 const color = new Color();
-const BLIGHT_COLOR = new Color('#ff2a6a');
 
 /**
  * Turns one generation's births and deaths into light: faint motes at births,
@@ -18,7 +16,6 @@ export function playTickEffects(
   result: TickResult,
   organisms: OrganismLayer,
   sparks: SparkLayer,
-  shockwaves: ShockwaveLayer,
   genSeconds: number,
 ): void {
   // Big generations get fewer sparks per event so the screen stays readable.
@@ -64,10 +61,4 @@ export function playTickEffects(
   }
 
   for (const o of result.removed) organisms.forget(o.id);
-
-  if (result.blight) {
-    const b = result.blight;
-    shockwaves.spawn(b.x, b.y, b.z, b.radius);
-    sparks.emit({ at: { x: b.x, y: b.y, z: b.z }, color: BLIGHT_COLOR, count: 140, speed: 16, life: 1.4, size: 0.5 });
-  }
 }
