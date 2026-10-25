@@ -1,62 +1,103 @@
-<html><head><title>Life Model</title>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Life</title>
+    <meta name="description" content="A bioluminescent life model: spores drift, bloom, breed, and fade in the deep." />
+    <meta name="theme-color" content="#01070c" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.25' stop-color='%233ff0d0'/%3E%3Cstop offset='1' stop-color='%233ff0d0' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%2301070c'/%3E%3Ccircle cx='32' cy='32' r='26' fill='url(%23g)'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="scene" aria-label="Animated three-dimensional view of the living population"></canvas>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <div id="hud">
+      <header class="panel brand">
+        <h1>Life</h1>
+        <p class="tagline">a bioluminescent life model</p>
+        <ol class="glyph-path" aria-label="Life stages">
+          <li style="--c: #9be7ff">.</li>
+          <li style="--c: #3ff0d0">o</li>
+          <li style="--c: #48b5ff">O</li>
+          <li style="--c: #ff5fd2">@</li>
+          <li style="--c: #a68bff">0</li>
+          <li style="--c: #4f6680">-</li>
+        </ol>
+        <dl class="stats">
+          <div><dt>Epoch</dt><dd id="stat-epoch">1</dd></div>
+          <div><dt>Generation</dt><dd id="stat-gen">0</dd></div>
+          <div><dt>Living</dt><dd id="stat-living">1</dd></div>
+          <div><dt>Peak</dt><dd id="stat-peak">1</dd></div>
+          <div><dt>Descent</dt><dd id="stat-depth">0</dd></div>
+          <div><dt>Tide</dt><dd id="stat-tide">&ndash;</dd></div>
+        </dl>
+        <div class="strategy" title="Average life strategy of the living population">
+          <div class="strategy-labels"><span>Hardy</span><span>Prolific</span></div>
+          <div class="strategy-track"><div class="strategy-mark" id="strategy-mark"></div></div>
+        </div>
+      </header>
 
-<style type="text/css">
-BODY {
-  background-color: #000000;
-	color: #FFFFFF;
-	font-family: Courier New, Courier;
-	margin: 0px;
-}
+      <div class="column">
+      <section class="panel legend" aria-label="Population by stage">
+        <ul id="legend"></ul>
+      </section>
 
-HEADER {
-	margin: 10px;
-}
+      <section class="panel chart-panel" aria-label="Population history">
+        <div class="panel-head"><span>Population</span><span class="muted" id="chart-range"></span></div>
+        <canvas id="chart"></canvas>
+        <div class="panel-head"><span>Lineage spectrum</span><span class="muted" id="spectrum-note"></span></div>
+        <canvas id="spectrum"></canvas>
+      </section>
+      </div>
 
-MAIN {
-	margin: 5px;
-}
+      <ul class="log" id="log" aria-live="polite"></ul>
 
-#model {
-	font-size: 24px;
-	display: block;
-	text-align: center;
-}
-</style>
+      <nav class="panel dock" aria-label="Controls">
+        <div class="dock-buttons">
+          <button id="btn-pause" class="icon-btn" title="Pause (Space)" aria-label="Pause">
+            <svg class="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.2" /><rect x="14" y="5" width="4" height="14" rx="1.2" /></svg>
+            <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.2-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" /></svg>
+          </button>
+          <button id="btn-step" class="icon-btn" title="Step one generation (S)" aria-label="Step one generation">
+            <svg viewBox="0 0 24 24"><path d="M6 5.5v13a1 1 0 0 0 1.5.86l8.2-6.5a1 1 0 0 0 0-1.72L7.5 4.64A1 1 0 0 0 6 5.5z" /><rect x="16.5" y="5" width="3" height="14" rx="1" /></svg>
+          </button>
+          <button id="btn-reset" class="icon-btn" title="Reset (R)" aria-label="Reset">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4.5h4.5" /></svg>
+          </button>
+        </div>
+        <label class="slider">
+          <span>Speed <output id="out-speed">2</output><small>gen/s</small></span>
+          <input id="in-speed" type="range" min="0" max="100" value="54" />
+        </label>
+        <label class="slider">
+          <span>Capacity <output id="out-capacity">1800</output></span>
+          <input id="in-capacity" type="range" min="300" max="5000" step="100" value="1800" />
+        </label>
+        <label class="slider">
+          <span>Mutation <output id="out-mutation">1.0</output><small>&times;</small></span>
+          <input id="in-mutation" type="range" min="0" max="40" value="10" />
+        </label>
+        <div class="toggles">
+          <button id="tg-lineage" class="chip on" title="Lineage threads (L)">Threads</button>
+          <button id="tg-orbit" class="chip on" title="Auto-orbit (O)">Orbit</button>
+          <button id="tg-hud" class="chip" title="Hide interface (H)">Hide UI</button>
+        </div>
+      </nav>
 
-<script type="text/javascript" src="life.js"></script>
+      <p class="hint" id="hint">Click the dark to seed a spore &middot; drag to orbit &middot; scroll to zoom</p>
+    </div>
 
-</head>
+    <button id="btn-show" class="chip floating" title="Show interface (H)">Show UI</button>
+    <div id="reticle" aria-hidden="true"></div>
+    <div id="tooltip" role="tooltip"></div>
 
-<body onload="lifeModel();">
-
-<header>
-<h1>Life</h1>
-<h4> . => o => O => @ => 0 => -
-
-<!--
-<p>Populations:
-  <select id="populations" onchange="reset();">
-    <option value="1">1</option>
-	  <option value="2">2</option>
-	  <option value="3" selected>3</option>
- </select>
-</p>
--->
-
-<p>Generation: <span id="gen"></span></p>
-<p>
-  <button onclick="toggleRunning();" id="pauseButton">Pause</button>
-  <button onclick="reset();">Reset</button>
-</p>
- 
-</header>
-
-<main>
-
-<span id="model"></span>
-
-</main>
-
-</body></html>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
