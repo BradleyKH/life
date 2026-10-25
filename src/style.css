@@ -647,3 +647,8 @@ input[type='range']::-moz-range-thumb {
     transition: none !important;
   }
 }
+
+body.ambient #hud,
+body.ambient #btn-show {
+  display: none;
+}

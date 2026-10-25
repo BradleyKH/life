@@ -22,6 +22,11 @@ const MAX_TICKS_PER_FRAME = 3;
 const OPENING_SECONDS = 16;
 const CLICK_SLOP_PX = 5;
 
+export interface AppOptions {
+  /** Wallpaper use: no interface and no pointer input, so clicks meant for other windows never steer the scene. */
+  ambient?: boolean;
+}
+
 export class App {
   private readonly viewport: Viewport;
   private readonly sim = new Simulation({ capacity: 5000, mutationRate: 4 });
@@ -46,7 +51,10 @@ export class App {
   /** Seconds into the opening dolly-out; null once finished or interrupted. */
   private opening: number | null = 0;
 
-  constructor(private readonly canvas: HTMLCanvasElement) {
+  constructor(
+    private readonly canvas: HTMLCanvasElement,
+    options: AppOptions = {},
+  ) {
     this.viewport = new Viewport(canvas);
     const { scene } = this.viewport;
     scene.add(this.backdrop.mesh, this.snow.points, this.threads.lines, this.organisms.points);
@@ -57,7 +65,8 @@ export class App {
       this.snow.setViewportHeight(h);
     });
 
-    this.bindPointer();
+    if (options.ambient) this.viewport.controls.enabled = false;
+    else this.bindPointer();
     bindControls({
       togglePause: () => (this.running = !this.running) === false,
       step: () => this.advance(),
